@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from typing import Union
+from src import api_functions as af
 
 app = FastAPI()
 
@@ -26,4 +26,4 @@ async def get_intersect_fields(geometry: str):
 
 @app.get("/stats/")
 async def get_region_stats(region: str):
-    return {"region": region}
+    return af.get_region_stats(region)

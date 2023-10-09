@@ -1,5 +1,16 @@
 version: '3.8'
 services:
+  geoapi_container:
+    image: andruxa17/${APP_NAME}:${TAG}
+    container_name: geoapi-container
+    restart: always
+    env_file:
+      .env
+    ports:
+      - "80:80"
+    networks:
+      - core-network
+
   postgis:
     image: postgis/postgis
     restart: always
