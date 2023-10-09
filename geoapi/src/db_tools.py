@@ -1,6 +1,5 @@
 import os
 
-from sqlalchemy import Table, MetaData, select
 from sqlalchemy import create_engine
 from sqlalchemy import text
 
@@ -16,8 +15,6 @@ def get_area_db(region: str) -> float:
         """)
         results = conn.execute(sql)
         return results.first()[0]
-        # for row in results:
-        #     return row[0]
 
 
 def get_gross_yield_db(region: str) -> float:
@@ -32,8 +29,6 @@ def get_gross_yield_db(region: str) -> float:
                 """)
         results = conn.execute(sql)
         return results.first()[0]
-        # for row in results:
-        #     return row[0]
 
 
 def get_weighted_average_yield_per_hectare_db(region: str) -> float:
@@ -49,20 +44,18 @@ def get_weighted_average_yield_per_hectare_db(region: str) -> float:
         """)
         results = conn.execute(sql)
         return results.first()[0]
-        # for row in results:
-        #     return row[0]
 
 
 def get_nearby_fields_db(x: float, y: float, distance: int):
     with engine.connect() as conn:
-        # initialize the Metadata Object
-        meta = MetaData()
-        # create a table schema
-        france = Table('france', meta, schema='france', autoload_with=engine)
+        # # initialize the Metadata Object
+        # meta = MetaData()
+        # # create a table schema
+        # france = Table('france', meta, schema='france', autoload_with=engine)
         sql = text(f"""
             Select *
             FROM {os.getenv('DB_SCHEMA_NAME')}.{os.getenv('DB_TABLE_NAME')} as fr
-            WHERE ST_DWithin(fr.wkb_geometry::geography, (ST_SetSRID(ST_MakePoint({x}, {y}, 4326))::geography, {distance});
+            WHERE ST_DWithin(fr.wkb_geometry::geography, (ST_SetSRID(ST_MakePoint({x}, {y}), 4326))::geography, {distance});
         """)
         result = conn.execute(sql)
         return result.fetchall()
