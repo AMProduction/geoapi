@@ -7,7 +7,7 @@ from sqlalchemy import text
 engine = create_engine(os.getenv('DB_CONNECTION_STRING'))
 
 
-async def get_area_db(region: str) -> float:
+def get_area_db(region: str) -> float:
     with engine.connect() as conn:
         sql = text(f"""
         SELECT sum(cast(area_ha as double precision)) FROM {os.getenv('DB_SCHEMA_NAME')}.{os.getenv('DB_TABLE_NAME')}
@@ -20,7 +20,7 @@ async def get_area_db(region: str) -> float:
         #     return row[0]
 
 
-async def get_gross_yield_db(region: str) -> float:
+def get_gross_yield_db(region: str) -> float:
     with engine.connect() as conn:
         sql = text(f"""
                 WITH harvest as (SELECT productivity * cast(area_ha as double precision) as harvest
@@ -36,7 +36,7 @@ async def get_gross_yield_db(region: str) -> float:
         #     return row[0]
 
 
-async def get_weighted_average_yield_per_hectare_db(region: str) -> float:
+def get_weighted_average_yield_per_hectare_db(region: str) -> float:
     with engine.connect() as conn:
         sql = text(f"""
                 WITH harvest as (SELECT productivity * cast(area_ha as double precision) as harvest,
@@ -53,7 +53,7 @@ async def get_weighted_average_yield_per_hectare_db(region: str) -> float:
         #     return row[0]
 
 
-async def get_nearby_fields_db(x: float, y: float, distance: int):
+def get_nearby_fields_db(x: float, y: float, distance: int):
     with engine.connect() as conn:
         # initialize the Metadata Object
         meta = MetaData()

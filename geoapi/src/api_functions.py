@@ -1,7 +1,7 @@
 from src import db_tools
 
 
-async def get_region_stats(region: str) -> dict:
+def get_region_stats(region: str) -> dict:
     # TODO: add region string validation (REGEXP)
     area = db_tools.get_area_db(region)
     gross_yield = db_tools.get_gross_yield_db(region)
@@ -9,7 +9,7 @@ async def get_region_stats(region: str) -> dict:
     return {"total_area": area, "total_yield": gross_yield, "average_yield": weighted_average_yield_per_hectare}
 
 
-async def get_nearby_fields(x: float, y: float, distance: int) -> dict:
+def get_nearby_fields(x: float, y: float, distance: int) -> dict:
     for row in db_tools.get_nearby_fields_db(x, y, distance):
         print(row)
         print(type(row))
