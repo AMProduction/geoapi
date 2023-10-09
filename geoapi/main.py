@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+
 from src import api_functions as af
 
 app = FastAPI()
@@ -10,8 +11,8 @@ async def root():
 
 
 @app.get("/nearby/")
-async def get_nearby_fields(point: int, distance: int):
-    return {"point": point, "distance": distance}
+async def get_nearby_fields(x: float, y: float, distance: int):
+    return af.get_nearby_fields(x, y, distance)
 
 
 @app.get("/inside/")

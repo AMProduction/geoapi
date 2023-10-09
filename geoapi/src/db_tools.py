@@ -1,11 +1,13 @@
+import os
+
+from sqlalchemy import Table, MetaData, select
 from sqlalchemy import create_engine
 from sqlalchemy import text
-import os
 
 engine = create_engine(os.getenv('DB_CONNECTION_STRING'))
 
 
-def get_area_db(region: str) -> float:
+async def get_area_db(region: str) -> float:
     with engine.connect() as conn:
         sql = text(f"""
         SELECT sum(cast(area_ha as double precision)) FROM {os.getenv('DB_SCHEMA_NAME')}.{os.getenv('DB_TABLE_NAME')}
@@ -13,11 +15,12 @@ def get_area_db(region: str) -> float:
         group by region;
         """)
         results = conn.execute(sql)
-        for row in results:
-            return row[0]
+        return results.first()[0]
+        # for row in results:
+        #     return row[0]
 
 
-def get_gross_yield_db(region: str) -> float:
+async def get_gross_yield_db(region: str) -> float:
     with engine.connect() as conn:
         sql = text(f"""
                 WITH harvest as (SELECT productivity * cast(area_ha as double precision) as harvest
@@ -28,11 +31,12 @@ def get_gross_yield_db(region: str) -> float:
                 FROM harvest;
                 """)
         results = conn.execute(sql)
-        for row in results:
-            return row[0]
+        return results.first()[0]
+        # for row in results:
+        #     return row[0]
 
 
-def get_weighted_average_yield_per_hectare_db(region: str) -> float:
+async def get_weighted_average_yield_per_hectare_db(region: str) -> float:
     with engine.connect() as conn:
         sql = text(f"""
                 WITH harvest as (SELECT productivity * cast(area_ha as double precision) as harvest,
@@ -44,5 +48,21 @@ def get_weighted_average_yield_per_hectare_db(region: str) -> float:
                 FROM harvest;
         """)
         results = conn.execute(sql)
-        for row in results:
-            return row[0]
+        return results.first()[0]
+        # for row in results:
+        #     return row[0]
+
+
+async def get_nearby_fields_db(x: float, y: float, distance: int):
+    with engine.connect() as conn:
+        # initialize the Metadata Object
+        meta = MetaData()
+        # create a table schema
+        france = Table('france', meta, schema='france', autoload_with=engine)
+        sql = text(f"""
+            Select *
+            FROM {os.getenv('DB_SCHEMA_NAME')}.{os.getenv('DB_TABLE_NAME')} as fr
+            WHERE ST_DWithin(fr.wkb_geometry::geography, (ST_SetSRID(ST_MakePoint({x}, {y}, 4326))::geography, {distance});
+        """)
+        result = conn.execute(sql)
+        return result.fetchall()
