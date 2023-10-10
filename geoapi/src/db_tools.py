@@ -48,12 +48,8 @@ def get_weighted_average_yield_per_hectare_db(region: str) -> float:
 
 def get_nearby_fields_db(x: float, y: float, distance: int):
     with engine.connect() as conn:
-        # # initialize the Metadata Object
-        # meta = MetaData()
-        # # create a table schema
-        # france = Table('france', meta, schema='france', autoload_with=engine)
         sql = text(f"""
-            Select *
+            Select id, crop, productivity, area_ha, region, ST_AsGeoJSON(fr.wkb_geometry)
             FROM {os.getenv('DB_SCHEMA_NAME')}.{os.getenv('DB_TABLE_NAME')} as fr
             WHERE ST_DWithin(fr.wkb_geometry::geography, (ST_SetSRID(ST_MakePoint({x}, {y}), 4326))::geography, {distance});
         """)
