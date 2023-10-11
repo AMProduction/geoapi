@@ -5,16 +5,15 @@ from fastapi import FastAPI, HTTPException
 from src import api_functions as af
 
 tags_metadata = [{"name": "nearby",
-                  "description": "Get the set of fields that are 'nearby' given point within a given distance.", },
+                  "description": "Get the set of fields that are 'nearby' given point within a given distance."},
                  {"name": "inside",
-                  "description": "Get the set of fields that are inside the parallelogram with given vertices", },
+                  "description": "Get the set of fields that are inside the parallelogram with given vertices"},
                  {"name": "intersect",
-                  "description": "Get the set of fields that intersect with the requested geometry", },
+                  "description": "Get the set of fields that intersect with the requested geometry"},
                  {"name": "stats",
-                  "description": "Get the area, gross yield, and weighted average yield per hectare in a region", }, ]
+                  "description": "Get the area, gross yield, and weighted average yield per hectare in a region"}]
 
 description = """
-Designed and implemented the API that allows customers to retrieve geometries from the Database by given parameters.
 
 ## Nearby
 
@@ -35,7 +34,7 @@ Get the area, gross yield, and weighted average yield per hectare in a region th
 
 """
 
-app = FastAPI(title="GeoAPI", description=description,
+app = FastAPI(title="GeoAPI", description=description, openapi_tags=tags_metadata,
               summary="Designed and implemented the API that allows customers to retrieve geometries from the "
                       "Database by given parameters", version="1.0.0",
               contact={"name": "Andrii Malchyk", "url": "https://www.linkedin.com/in/andrii-malchyk/",
