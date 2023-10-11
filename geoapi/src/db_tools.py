@@ -2,7 +2,6 @@ import os
 
 from sqlalchemy import create_engine
 from sqlalchemy import text
-from sqlalchemy.exc import ProgrammingError
 
 engine = create_engine(os.getenv('DB_CONNECTION_STRING'))
 
@@ -15,8 +14,8 @@ def get_area_db(region: str) -> float:
             group by region;
         """)
         results = conn.execute(sql)
-        if results is not None:
-            return results.first()[0]
+        for row in results:
+            return row[0]
 
 
 def get_gross_yield_db(region: str) -> float:
@@ -30,8 +29,8 @@ def get_gross_yield_db(region: str) -> float:
                 FROM harvest;
                 """)
         results = conn.execute(sql)
-        if results is not None:
-            return results.first()[0]
+        for row in results:
+            return row[0]
 
 
 def get_weighted_average_yield_per_hectare_db(region: str) -> float:
@@ -46,8 +45,8 @@ def get_weighted_average_yield_per_hectare_db(region: str) -> float:
                 FROM harvest;
         """)
         results = conn.execute(sql)
-        if results is not None:
-            return results.first()[0]
+        for row in results:
+            return row[0]
 
 
 def get_nearby_fields_db(x: float, y: float, distance: int, crop: str):
@@ -57,7 +56,6 @@ def get_nearby_fields_db(x: float, y: float, distance: int, crop: str):
     if crop:
         query += f" AND fr.crop='{crop}'"
     query += ";"
-    print(query)
     return run_query(query)
 
 
@@ -69,7 +67,6 @@ def get_fields_inside_parallelogram_db(x0: float, y0: float, x1: float, y1: floa
     if crop:
         query += f" AND fr.crop='{crop}'"
     query += ";"
-    print(query)
     return run_query(query)
 
 
@@ -80,7 +77,6 @@ def get_intersect_fields_db(geometry: str, crop: str):
     if crop:
         query += f" AND fr.crop='{crop}'"
     query += ";"
-    print(query)
     return run_query(query)
 
 
@@ -88,12 +84,7 @@ def run_query(query: str):
     with engine.connect() as conn:
         sql = text(query)
         result = conn.execute(sql)
-        try:
-            result.fetchone()
-        except ProgrammingError as e:
-            print(f"No data found for {query}")
-        else:
-            return result.fetchall()
+        return result.fetchall()
 
 
 def is_valid(geom: str) -> bool:
