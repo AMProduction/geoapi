@@ -2,6 +2,7 @@ import os
 
 from sqlalchemy import create_engine
 from sqlalchemy import text
+from sqlalchemy.exc import ProgrammingError
 
 engine = create_engine(os.getenv('DB_CONNECTION_STRING'))
 
@@ -9,12 +10,16 @@ engine = create_engine(os.getenv('DB_CONNECTION_STRING'))
 def get_area_db(region: str) -> float:
     with engine.connect() as conn:
         sql = text(f"""
-        SELECT sum(cast(area_ha as double precision)) FROM {os.getenv('DB_SCHEMA_NAME')}.{os.getenv('DB_TABLE_NAME')}
-        where region='{region}'
-        group by region;
+            SELECT sum(cast(area_ha as double precision)) FROM {os.getenv('DB_SCHEMA_NAME')}.{os.getenv('DB_TABLE_NAME')}
+            where region='{region}'
+            group by region;
         """)
         results = conn.execute(sql)
-        if len(results.fetchall()) > 0:
+        try:
+            results.fetchone()
+        except ProgrammingError as e:
+            print(f"get_area_db() - no data found for {region}")
+        else:
             return results.first()[0]
 
 
@@ -29,7 +34,11 @@ def get_gross_yield_db(region: str) -> float:
                 FROM harvest;
                 """)
         results = conn.execute(sql)
-        if len(results.fetchall()) > 0:
+        try:
+            results.fetchone()
+        except ProgrammingError as e:
+            print(f"get_gross_yield_db() - no data found for {region}")
+        else:
             return results.first()[0]
 
 
@@ -45,7 +54,11 @@ def get_weighted_average_yield_per_hectare_db(region: str) -> float:
                 FROM harvest;
         """)
         results = conn.execute(sql)
-        if len(results.fetchall()) > 0:
+        try:
+            results.fetchone()
+        except ProgrammingError as e:
+            print(f"get_weighted_average_yield_per_hectare_db - no data found for {region}")
+        else:
             return results.first()[0]
 
 
@@ -87,7 +100,11 @@ def run_query(query: str):
     with engine.connect() as conn:
         sql = text(query)
         result = conn.execute(sql)
-        if result.rowcount() > 0:
+        try:
+            result.fetchone()
+        except ProgrammingError as e:
+            print(f"No data found for {query}")
+        else:
             return result.fetchall()
 
 
