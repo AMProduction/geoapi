@@ -29,4 +29,12 @@ SELECT Find_SRID('france', 'france', 'wkb_geometry');
 ---task 1
 Select id, crop, productivity, area_ha, region, ST_AsGeoJSON(fr.wkb_geometry)
 FROM france.france as fr
-WHERE ST_DWithin(fr.wkb_geometry::geography, (ST_SetSRID(ST_MakeP1.3373403, 49.9948281oint(), 4326))::geography, 500);
+WHERE ST_DWithin(fr.wkb_geometry::geography, (ST_SetSRID(ST_MakePoint(1.3373403, 49.9948281), 4326))::geography, 500);
+
+---task 2
+Select id, crop, productivity, area_ha, region, ST_AsGeoJSON(fr.wkb_geometry)
+FROM france.france as fr
+WHERE ST_Contains(ST_MakePolygon('LINESTRING(75 29,77 29,77 29, 75 29)'), fr.wkb_geometry);
+
+--task 3
+SELECT ST_IsValid(ST_GeomFromText('LINESTRING(0 0, 1 1)'))

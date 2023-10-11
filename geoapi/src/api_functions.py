@@ -17,6 +17,20 @@ def get_nearby_fields(x: float, y: float, distance: int) -> dict:
     return GeoJSON
 
 
+def get_fields_inside_parallelogram(x0: float, y0: float, x1: float, y1: float, x2: float, y2: float, x3: float,
+                                    y3: float) -> dict:
+    query_result = db_tools.get_fields_inside_parallelogram_db(x0, y0, x1, y1, x2, y2, x3, y3)
+    GeoJSON = create_GeoJSON(query_result)
+    return GeoJSON
+
+
+def get_intersect_fields(geometry: str) -> dict:
+    if db_tools.is_valid(geometry):
+        query_result = db_tools.get_intersect_fields_db(geometry)
+        GeoJSON = create_GeoJSON(query_result)
+        return GeoJSON
+
+
 def create_GeoJSON(query_result) -> dict:
     features = []
     for row in query_result:
