@@ -15,11 +15,7 @@ def get_area_db(region: str) -> float:
             group by region;
         """)
         results = conn.execute(sql)
-        try:
-            results.fetchone()
-        except ProgrammingError as e:
-            print(f"get_area_db() - no data found for {region}")
-        else:
+        if results:
             return results.first()[0]
 
 
@@ -34,11 +30,7 @@ def get_gross_yield_db(region: str) -> float:
                 FROM harvest;
                 """)
         results = conn.execute(sql)
-        try:
-            results.fetchone()
-        except ProgrammingError as e:
-            print(f"get_gross_yield_db() - no data found for {region}")
-        else:
+        if results:
             return results.first()[0]
 
 
@@ -54,11 +46,7 @@ def get_weighted_average_yield_per_hectare_db(region: str) -> float:
                 FROM harvest;
         """)
         results = conn.execute(sql)
-        try:
-            results.fetchone()
-        except ProgrammingError as e:
-            print(f"get_weighted_average_yield_per_hectare_db - no data found for {region}")
-        else:
+        if results:
             return results.first()[0]
 
 
