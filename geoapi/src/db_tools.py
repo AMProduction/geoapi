@@ -14,7 +14,7 @@ def get_area_db(region: str) -> float:
         group by region;
         """)
         results = conn.execute(sql)
-        if results is not None:
+        if results.first() is not None:
             return results.first()[0]
 
 
@@ -29,7 +29,7 @@ def get_gross_yield_db(region: str) -> float:
                 FROM harvest;
                 """)
         results = conn.execute(sql)
-        if results is not None:
+        if results.first() is not None:
             return results.first()[0]
 
 
@@ -45,7 +45,7 @@ def get_weighted_average_yield_per_hectare_db(region: str) -> float:
                 FROM harvest;
         """)
         results = conn.execute(sql)
-        if results is not None:
+        if results.first() is not None:
             return results.first()[0]
 
 
@@ -56,8 +56,9 @@ def get_nearby_fields_db(x: float, y: float, distance: int, crop: str):
             WHERE ST_DWithin(fr.wkb_geometry::geography, (ST_SetSRID(ST_MakePoint({x}, {y}), 4326))::geography, {distance})
         """
     if crop:
-        query = query.join(f" AND fr.crop='{crop}'")
-    query = query.join(";")
+        query += f" AND fr.crop='{crop}'"
+    query += ";"
+    print(query)
     return run_query(query)
 
 
@@ -69,8 +70,9 @@ def get_fields_inside_parallelogram_db(x0: float, y0: float, x1: float, y1: floa
             WHERE ST_Contains(ST_Polygon('LINESTRING({x0} {y0},{x1} {y1},{x2} {y2},{x3} {y3},{x0} {y0})'::geometry, 4326), fr.wkb_geometry)
         """
     if crop:
-        query = query.join(f" AND fr.crop='{crop}'")
-    query = query.join(";")
+        query += f" AND fr.crop='{crop}'"
+    query += ";"
+    print(query)
     return run_query(query)
 
 
@@ -81,8 +83,9 @@ def get_intersect_fields_db(geometry: str, crop: str):
             WHERE ST_Intersects(fr.wkb_geometry, ST_GeomFromText('{geometry}'))
         """
     if crop:
-        query = query.join(f" AND fr.crop='{crop}'")
-    query = query.join(";")
+        query += f" AND fr.crop='{crop}'"
+    query += ";"
+    print(query)
     return run_query(query)
 
 
