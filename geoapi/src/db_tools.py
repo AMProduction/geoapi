@@ -14,7 +14,7 @@ def get_area_db(region: str) -> float:
         group by region;
         """)
         results = conn.execute(sql)
-        if results.rowcount() > 0:
+        if len(results.fetchall()) > 0:
             return results.first()[0]
 
 
@@ -29,7 +29,7 @@ def get_gross_yield_db(region: str) -> float:
                 FROM harvest;
                 """)
         results = conn.execute(sql)
-        if results.rowcount() > 0:
+        if len(results.fetchall()) > 0:
             return results.first()[0]
 
 
@@ -45,7 +45,7 @@ def get_weighted_average_yield_per_hectare_db(region: str) -> float:
                 FROM harvest;
         """)
         results = conn.execute(sql)
-        if results.rowcount() > 0:
+        if len(results.fetchall()) > 0:
             return results.first()[0]
 
 
