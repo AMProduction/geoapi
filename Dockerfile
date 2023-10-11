@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3.10.13-slim-bullseye
+FROM python:3.11-slim-bullseye
 LABEL authors="andrii_malchyk"
 
 # Keeps Python from generating .pyc files in the container

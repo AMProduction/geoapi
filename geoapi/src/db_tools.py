@@ -14,7 +14,7 @@ def get_area_db(region: str) -> float:
         group by region;
         """)
         results = conn.execute(sql)
-        if results.first() is not None:
+        if results.rowcount() > 0:
             return results.first()[0]
 
 
@@ -29,7 +29,7 @@ def get_gross_yield_db(region: str) -> float:
                 FROM harvest;
                 """)
         results = conn.execute(sql)
-        if results.first() is not None:
+        if results.rowcount() > 0:
             return results.first()[0]
 
 
@@ -45,16 +45,14 @@ def get_weighted_average_yield_per_hectare_db(region: str) -> float:
                 FROM harvest;
         """)
         results = conn.execute(sql)
-        if results.first() is not None:
+        if results.rowcount() > 0:
             return results.first()[0]
 
 
 def get_nearby_fields_db(x: float, y: float, distance: int, crop: str):
-    query = f"""
-            Select id, crop, productivity, area_ha, region, ST_AsGeoJSON(fr.wkb_geometry)
-            FROM {os.getenv('DB_SCHEMA_NAME')}.{os.getenv('DB_TABLE_NAME')} as fr
-            WHERE ST_DWithin(fr.wkb_geometry::geography, (ST_SetSRID(ST_MakePoint({x}, {y}), 4326))::geography, {distance})
-        """
+    query = f"""Select id, crop, productivity, area_ha, region, ST_AsGeoJSON(fr.wkb_geometry)
+                FROM {os.getenv('DB_SCHEMA_NAME')}.{os.getenv('DB_TABLE_NAME')} as fr
+                WHERE ST_DWithin(fr.wkb_geometry::geography, (ST_SetSRID(ST_MakePoint({x}, {y}), 4326))::geography, {distance})"""
     if crop:
         query += f" AND fr.crop='{crop}'"
     query += ";"
@@ -64,11 +62,9 @@ def get_nearby_fields_db(x: float, y: float, distance: int, crop: str):
 
 def get_fields_inside_parallelogram_db(x0: float, y0: float, x1: float, y1: float, x2: float, y2: float, x3: float,
                                        y3: float, crop: str):
-    query = f"""
-            Select id, crop, productivity, area_ha, region, ST_AsGeoJSON(fr.wkb_geometry)
-            FROM {os.getenv('DB_SCHEMA_NAME')}.{os.getenv('DB_TABLE_NAME')} as fr
-            WHERE ST_Contains(ST_Polygon('LINESTRING({x0} {y0},{x1} {y1},{x2} {y2},{x3} {y3},{x0} {y0})'::geometry, 4326), fr.wkb_geometry)
-        """
+    query = f"""Select id, crop, productivity, area_ha, region, ST_AsGeoJSON(fr.wkb_geometry)
+                FROM {os.getenv('DB_SCHEMA_NAME')}.{os.getenv('DB_TABLE_NAME')} as fr
+                WHERE ST_Contains(ST_Polygon('LINESTRING({x0} {y0},{x1} {y1},{x2} {y2},{x3} {y3},{x0} {y0})'::geometry, 4326), fr.wkb_geometry)"""
     if crop:
         query += f" AND fr.crop='{crop}'"
     query += ";"
@@ -77,11 +73,9 @@ def get_fields_inside_parallelogram_db(x0: float, y0: float, x1: float, y1: floa
 
 
 def get_intersect_fields_db(geometry: str, crop: str):
-    query = f"""
-            Select id, crop, productivity, area_ha, region, ST_AsGeoJSON(fr.wkb_geometry)
-            FROM {os.getenv('DB_SCHEMA_NAME')}.{os.getenv('DB_TABLE_NAME')} as fr
-            WHERE ST_Intersects(fr.wkb_geometry, ST_GeomFromText('{geometry}'))
-        """
+    query = f"""Select id, crop, productivity, area_ha, region, ST_AsGeoJSON(fr.wkb_geometry)
+                FROM {os.getenv('DB_SCHEMA_NAME')}.{os.getenv('DB_TABLE_NAME')} as fr
+                WHERE ST_Intersects(fr.wkb_geometry, ST_GeomFromText('{geometry}'))"""
     if crop:
         query += f" AND fr.crop='{crop}'"
     query += ";"
@@ -93,7 +87,7 @@ def run_query(query: str):
     with engine.connect() as conn:
         sql = text(query)
         result = conn.execute(sql)
-        if result is not None:
+        if result.rowcount() > 0:
             return result.fetchall()
 
 
