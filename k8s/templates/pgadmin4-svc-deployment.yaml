@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c
+    kompose.version: 1.31.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: pgadmin4-svc
+  name: pgadmin4-svc
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: pgadmin4-svc
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -c
+        kompose.version: 1.31.1 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/geoapi-core-network: "true"
+        io.kompose.service: pgadmin4-svc
+    spec:
+      containers:
+        - env:
+            - name: APP_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: APP_NAME
+                  name: Users-andrii_malchyk-PycharmProjects-geoapi--env
+            - name: DB_CONNECTION_STRING
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_CONNECTION_STRING
+                  name: Users-andrii_malchyk-PycharmProjects-geoapi--env
+            - name: DB_SCHEMA_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_SCHEMA_NAME
+                  name: Users-andrii_malchyk-PycharmProjects-geoapi--env
+            - name: DB_TABLE_NAME
+              valueFrom:
+                configMapKeyRef:
+                  key: DB_TABLE_NAME
+                  name: Users-andrii_malchyk-PycharmProjects-geoapi--env
+            - name: PGADMIN_DEFAULT_EMAIL
+              valueFrom:
+                configMapKeyRef:
+                  key: PGADMIN_DEFAULT_EMAIL
+                  name: Users-andrii_malchyk-PycharmProjects-geoapi--env
+            - name: PGADMIN_DEFAULT_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: PGADMIN_DEFAULT_PASSWORD
+                  name: Users-andrii_malchyk-PycharmProjects-geoapi--env
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  key: POSTGRES_PASSWORD
+                  name: Users-andrii_malchyk-PycharmProjects-geoapi--env
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  key: POSTGRES_USER
+                  name: Users-andrii_malchyk-PycharmProjects-geoapi--env
+            - name: TAG
+              valueFrom:
+                configMapKeyRef:
+                  key: TAG
+                  name: Users-andrii_malchyk-PycharmProjects-geoapi--env
+          image: dpage/pgadmin4
+          name: pgadmin4
+          ports:
+            - containerPort: 80
+              hostPort: 5050
+              protocol: TCP
+          resources: {}
+      restartPolicy: Always
+status: {}

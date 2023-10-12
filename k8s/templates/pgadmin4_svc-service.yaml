@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -c
+    kompose.version: 1.31.1 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: pgadmin4-svc
+  name: pgadmin4_svc
+  namespace: default
+spec:
+  ports:
+    - name: "5050"
+      port: 5050
+      targetPort: 80
+  selector:
+    io.kompose.service: pgadmin4-svc
+status:
+  loadBalancer: {}

@@ -1,0 +1,4 @@
+name: GeoAPI
+description: A Helm Chart for docker-compose
+version: 1.0.0
+apiVersion: v2

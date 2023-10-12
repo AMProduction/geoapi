@@ -1,9 +1,11 @@
 version: '3.8'
 services:
-  geoapi_container:
+  geoapi_svc:
     image: andruxa17/${APP_NAME}:${TAG}
     container_name: geoapi-container
     restart: always
+    depends_on:
+      - postgis_svc
     env_file:
       .env
     ports:
@@ -11,7 +13,7 @@ services:
     networks:
       - core-network
 
-  postgis:
+  postgis_svc:
     image: postgis/postgis
     restart: always
     container_name: postgis-container
@@ -24,7 +26,7 @@ services:
     networks:
       - core-network
 
-  pgadmin4:
+  pgadmin4_svc:
     image: dpage/pgadmin4
     restart: always
     container_name: pgadmin4
@@ -33,7 +35,7 @@ services:
     env_file:
       .env
     links:
-      - postgis
+      - postgis_svc
     networks:
       - core-network
 
